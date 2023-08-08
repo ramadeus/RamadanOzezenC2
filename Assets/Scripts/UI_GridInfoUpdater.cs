@@ -7,9 +7,12 @@ using UnityEngine.UI;
 
 public class UI_GridInfoUpdater: MonoBehaviour {
     //ı 
+    #region Fields
     [SerializeField] TMP_InputField inputField;
     [SerializeField] Button generateCellSizeButton;
     [SerializeField] TMP_Text matchCounterText;
+    #endregion
+
     private void OnEnable()
     {
         EventsManager.onMatchCount += OnMatchCount;
@@ -32,12 +35,13 @@ public class UI_GridInfoUpdater: MonoBehaviour {
     }
     public void OnInputFieldValueChanged()
     {
+        //check inputfield to register valid values
         if(inputField.text == string.Empty)
         {
             inputField.text = "0";
         }
-        if( int.Parse(inputField.text) >= 2)
-        { 
+        if(int.Parse(inputField.text) >= 2)
+        {
             generateCellSizeButton.interactable = true;
         } else
         {

@@ -7,17 +7,18 @@ using UnityEngine.UI;
 
 public class GridManager: MonoBehaviour {
     //ı
-
+    #region Fields
     public int cellCount = 3;
     public List<Cell> cells;
     public static GridManager instance;
 
     [SerializeField] GameObject cellPrefab;
 
-    int columns;
-    int rows;
-    float tileSize = 1;
-
+    private int columns;
+    private int rows;
+    private float cellSize = 1;
+    #endregion
+    #region Manager Methods
     private void Awake()
     {
         if(instance == null)
@@ -26,9 +27,12 @@ public class GridManager: MonoBehaviour {
         } else
         {
             Destroy(this);
-        }
-        GenerateCells();
-    } 
+        } 
+    }
+    private void Start()
+    {
+         GenerateCells();
+    }
     private void OnEnable()
     {
         EventsManager.onGenerateButtonClick += UpdateCells;
@@ -43,37 +47,8 @@ public class GridManager: MonoBehaviour {
         cellCount = value;
         GenerateCells();
     }
-
-
-
-    void GenerateCells()
-    {
-        ClearLastCells();
-        tileSize = Camera.main.orthographicSize / cellCount;
-        columns = rows = cellCount;
-        for(int i = 0; i < columns; i++)
-        {
-            for(int j = 0; j < rows; j++)
-            {
-                SpawnGridCell(i, j);
-            }
-        }
-        EventsManager.onAllCellsAreInitialized?.Invoke();
-        SetGridPoisiton();
-
-    }
-
-    
-
-    private void SetGridPoisiton()
-    {
-        Transform lastGridCell = transform.GetChild(transform.childCount - 1);
-        float xPos = lastGridCell.localPosition.x / 2f;
-        float yPos = lastGridCell.localPosition.y / 2f;
-
-        transform.position = new Vector2(-xPos, -yPos + 2);
-    }
-
+    #endregion 
+    #region Initializers
     private void ClearLastCells()
     {
         transform.position = Vector2.zero;
@@ -83,16 +58,44 @@ public class GridManager: MonoBehaviour {
             Destroy(transform.GetChild(i).gameObject);
         }
     }
+    void GenerateCells()
+    {
+        ClearLastCells();
+        cellSize = Camera.main.orthographicSize / cellCount;
+        columns = rows = cellCount;
+        for(int i = 0; i < columns; i++)
+        {
+            for(int j = 0; j < rows; j++)
+            {
+                SpawnGridCell(i, j);
+            }
+        }
+        EventsManager.onAllCellsAreInitialized?.Invoke();
+        SetGridAreaPoisiton();
+
+    } 
+    private void SetGridAreaPoisiton()
+    {
+        Transform lastGridCell = transform.GetChild(transform.childCount - 1);
+        float xPos = lastGridCell.localPosition.x / 2f;
+        float yPos = lastGridCell.localPosition.y / 2f;
+
+        transform.position = new Vector2(-xPos, -yPos + 2);
+    }
+
 
     private void SpawnGridCell(int x, int y)
     {
 
         GameObject gridCell = Instantiate(cellPrefab, transform);
         gridCell.name = "Cell X:" + x + "Y:" + y;
-        gridCell.transform.localScale = new Vector2(tileSize - (tileSize * .1f), tileSize - (tileSize * .1f));
-        gridCell.transform.position = new Vector3(x * tileSize, -y * tileSize, 0);
+
+        float scale = cellSize - (cellSize * .1f); // to get the cell smoother view
+        gridCell.transform.localScale = new Vector2(scale, scale);
+        gridCell.transform.position = new Vector3(x * cellSize, -y * cellSize, 0);
         Cell cellScript = gridCell.GetComponent<Cell>();
         cellScript.gridMatrix = new Vector2(x, y);
         cells.Add(cellScript);
     }
+    #endregion
 }

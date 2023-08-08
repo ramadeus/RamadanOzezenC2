@@ -2,10 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MatchHandler : MonoBehaviour
-{
+public class MatchHandler: MonoBehaviour {
     //ı
-    public List<Cell> cellsToUnselect =new();
+    public List<Cell> cellsToUnselect = new();
     public static MatchHandler instance;
     int matchCount;
     private void Awake()
@@ -16,19 +15,21 @@ public class MatchHandler : MonoBehaviour
         } else
         {
             Destroy(this);
-        } 
+        }
     }
 
     public void CheckSelections()
     {
-        if(cellsToUnselect.Count >=3)
-        {  matchCount++;
+        // verify the selections and clear the area
+        if(cellsToUnselect.Count >= 3)
+        {
+            matchCount++;
             EventsManager.onMatchCount?.Invoke(matchCount);
             for(int i = 0; i < cellsToUnselect.Count; i++)
             {
                 cellsToUnselect[i].UnselectThisCell();
-            } 
-          
+            }
+
 
         }
     }
